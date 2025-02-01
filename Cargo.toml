@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 raylib = { version = "5.0.2" }
+derive_more = { version = "1.0.0", features = ["full"] }
