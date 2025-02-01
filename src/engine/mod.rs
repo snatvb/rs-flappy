@@ -75,14 +75,17 @@ impl Engine {
 
     pub fn switch_scene(&self, name: &str) -> bool {
         if let Some(mut scene) = self.current_scene() {
+            log::info!("Unlaading scene {name}...");
             scene.unload(self);
         }
 
         if let Some(mut scene) = SceneGuard::new(&self, name) {
+            log::info!("Loading scene {name}...");
             scene.load(self);
             self.current_scene.replace_with(|_| Some(name.to_owned()));
             return true;
         }
+        log::warn!("Failed to load scene {name}");
 
         false
     }
