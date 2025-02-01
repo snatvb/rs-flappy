@@ -12,6 +12,7 @@ fn main() {
     engine
         .lock_fps(30)
         .register_scene(Box::new(scenes::Welcome::new()))
+        .register_scene(Box::new(scenes::Game::new()))
         .switch_scene("welcome");
 
     while !engine.should_close() {

@@ -87,12 +87,6 @@ impl Engine {
         false
     }
 
-    fn draw_fps(&self) {
-        // self.renderer.borrow_mut().draw_in(|d| {
-        //     d.draw_fps(10, 10);
-        // })
-    }
-
     fn current_scene(&self) -> Option<SceneGuard> {
         self.current_scene
             .borrow()
@@ -110,6 +104,7 @@ impl Engine {
         d.clear_background(Color::BLACK);
 
         let mut renderer = self.renderer.borrow_mut();
+        renderer.clean(&self.thread, &mut d);
         let mut handler = RendererHandler::new(&mut renderer, self.thread.clone(), &mut d);
         if let Some(mut scene) = self.current_scene() {
             scene.draw(self, &mut handler);

@@ -42,16 +42,11 @@ impl Renderer {
         })
     }
 
-    // pub fn draw_in<F>(&mut self, engine: &Engine, f: F)
-    // where
-    //     F: FnOnce(&mut RaylibTextureMode<&mut RaylibHandle>),
-    // {
-    //     let mut d = engine
-    //         .rl
-    //         .borrow_mut()
-    //         .begin_texture_mode(&engine.thread, &mut self.texture);
-    //     f(&mut d);
-    // }
+    pub fn clean(&self, thread: &RaylibThread, d: &mut RaylibDrawHandle) {
+        let texture = &mut *self.texture.borrow_mut();
+        let mut d = d.begin_texture_mode(thread, texture);
+        d.clear_background(Color::BLANK);
+    }
 
     pub fn draw(&self, d: &mut RaylibDrawHandle) {
         d.draw_texture_pro(
@@ -102,10 +97,4 @@ impl<'a, 'b, 'd> RendererHandler<'a, 'b, 'd> {
         let mut d = d.begin_texture_mode(&self.thread, texture);
         f(&mut d, &renderer);
     }
-
-    // pub fn begin<'c>(&'c self) -> RaylibTextureMode<'c, RaylibDrawHandle<'d>> {
-    //     let mut d = self.d.borrow_mut();
-    //     let texture = &mut self.renderer.borrow_mut().texture;
-    //     d.begin_texture_mode(&self.thread, texture)
-    // }
 }
