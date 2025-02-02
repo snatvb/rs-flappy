@@ -23,4 +23,28 @@ impl AnimatedSprite {
             timer: Timer::new(0.0, speed),
         }
     }
+
+    pub fn set_speed(&mut self, speed: f32) -> &mut Self {
+        self.timer.max = speed;
+        self
+    }
+
+    pub fn speed(&self) -> f32 {
+        self.timer.max
+    }
+
+    pub fn update(&mut self, delta: f32) {
+        if !self.timer.tick(delta) {
+            return;
+        }
+
+        let frame = self.frames.next();
+        let x = self.sprite.width() * frame as f32;
+        let y = self.sprite.get_offset_y();
+        self.sprite.set_offset(x, y);
+    }
+
+    pub fn draw(&self, d: &mut RaylibTextureMode<RaylibDrawHandle>) {
+        self.sprite.draw(d);
+    }
 }

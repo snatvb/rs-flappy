@@ -32,6 +32,14 @@ impl Sprite {
         Vector2::new(self.source.x, self.source.y)
     }
 
+    pub fn get_offset_x(&self) -> f32 {
+        self.source.x
+    }
+
+    pub fn get_offset_y(&self) -> f32 {
+        self.source.y
+    }
+
     pub fn resize(&mut self, w: f32, h: f32) -> &mut Self {
         self.dest.width = w;
         self.dest.height = h;

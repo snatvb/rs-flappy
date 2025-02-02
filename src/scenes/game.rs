@@ -31,7 +31,15 @@ impl Scene for Game {
         self.player = Some(Player::new(texture));
     }
 
-    fn draw(&mut self, _: &Engine, renderer: &mut RendererHandler) {
+    fn update(&mut self, _engine: &Engine) {
+        let player = self
+            .player
+            .as_mut()
+            .expect("Player must be initialized to draw the game");
+        player.update(_engine);
+    }
+
+    fn draw(&mut self, _engine: &Engine, renderer: &mut RendererHandler) {
         const FZ: i32 = 10;
         renderer.draw(|d, r| {
             let player = self

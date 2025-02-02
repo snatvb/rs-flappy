@@ -1,6 +1,6 @@
 use std::{
     borrow::BorrowMut,
-    cell::{RefCell, RefMut},
+    cell::{Cell, RefCell, RefMut},
     collections::HashMap,
     os::unix::ffi,
 };
@@ -23,25 +23,26 @@ pub struct Engine {
     pub rl: RefCell<RaylibHandle>,
     pub thread: RaylibThread,
     pub renderer: RefCell<Renderer>,
+    pub delta: Cell<f32>,
     scenes: RefCell<HashMap<String, Box<dyn Scene>>>,
     current_scene: RefCell<Option<String>>,
 }
 
-pub struct TickContext<'a> {
-    pub rl: RefMut<'a, RaylibHandle>,
-    pub thread: &'a RaylibThread,
-    pub d: RaylibDrawHandle<'a>,
-}
-
-impl<'a> TickContext<'a> {
-    fn new(
-        rl: RefMut<'a, RaylibHandle>,
-        thread: &'a RaylibThread,
-        d: RaylibDrawHandle<'a>,
-    ) -> Self {
-        Self { rl, thread, d }
-    }
-}
+// pub struct TickContext<'a> {
+//     pub rl: RefMut<'a, RaylibHandle>,
+//     pub thread: &'a RaylibThread,
+//     pub d: RaylibDrawHandle<'a>,
+// }
+//
+// impl<'a> TickContext<'a> {
+//     fn new(
+//         rl: RefMut<'a, RaylibHandle>,
+//         thread: &'a RaylibThread,
+//         d: RaylibDrawHandle<'a>,
+//     ) -> Self {
+//         Self { rl, thread, d }
+//     }
+// }
 
 impl Engine {
     pub fn new(mut rl: RaylibHandle, thread: RaylibThread) -> Result<Engine, String> {
@@ -50,6 +51,7 @@ impl Engine {
         let renderer = Renderer::new(&mut rl, &thread, width, height)?;
 
         Ok(Self {
+            delta: Default::default(),
             rl: RefCell::new(rl),
             thread,
             renderer: RefCell::new(renderer),
@@ -99,6 +101,8 @@ impl Engine {
     }
 
     pub fn tick(&self) {
+        self.delta.set(self.rl.borrow().get_frame_time());
+
         if let Some(mut scene) = self.current_scene() {
             scene.update(self);
         }
