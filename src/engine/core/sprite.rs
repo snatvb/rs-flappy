@@ -1,7 +1,9 @@
+use std::rc::Rc;
+
 use raylib::prelude::*;
 
 pub struct Sprite {
-    pub texture: Texture2D,
+    pub texture: Rc<Texture2D>,
     pub rotation: f32,
     pub position: Vector2,
 
@@ -11,7 +13,7 @@ pub struct Sprite {
 }
 
 impl Sprite {
-    pub fn new(texture: Texture2D, w: f32, h: f32) -> Self {
+    pub fn new(texture: Rc<Texture2D>, w: f32, h: f32) -> Self {
         Self {
             texture,
             rotation: 0.0,
@@ -62,7 +64,7 @@ impl Sprite {
 
     pub fn draw(&self, d: &mut RaylibTextureMode<RaylibDrawHandle>) {
         d.draw_texture_pro(
-            &self.texture,
+            self.texture.as_ref(),
             self.source,
             self.dest,
             Vector2::default(),

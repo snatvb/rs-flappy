@@ -1,3 +1,5 @@
+use std::borrow::BorrowMut;
+
 use raylib::prelude::*;
 
 use crate::engine::renderer::RendererHandler;
@@ -22,11 +24,13 @@ impl Scene for Game {
 
     fn load(&mut self, _engine: &Engine) {
         let texture = _engine
-            .rl
-            .borrow_mut()
-            .load_texture(&_engine.thread, "assets/birds.png")
+            .assets
+            .load_texture(
+                &mut _engine.rl.borrow_mut(),
+                &_engine.thread,
+                "assets/birds.png",
+            )
             .expect("Birds png must be defined");
-        log::debug!("Texture loaded");
 
         self.player = Some(Player::new(texture));
     }

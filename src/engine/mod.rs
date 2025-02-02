@@ -3,6 +3,7 @@ use std::{
     cell::{Cell, RefCell, RefMut},
     collections::HashMap,
     os::unix::ffi,
+    rc::Rc,
 };
 
 use derive_more::{Deref, DerefMut};
@@ -15,6 +16,7 @@ use self::{
     scene::Scene,
 };
 
+pub mod assets;
 pub mod core;
 pub mod renderer;
 pub mod scene;
@@ -24,6 +26,7 @@ pub struct Engine {
     pub thread: RaylibThread,
     pub renderer: RefCell<Renderer>,
     pub delta: Cell<f32>,
+    pub assets: assets::Assets,
     scenes: RefCell<HashMap<String, Box<dyn Scene>>>,
     current_scene: RefCell<Option<String>>,
 }
@@ -49,11 +52,13 @@ impl Engine {
         let width = (rl.get_screen_width() / 4) as u32;
         let height = (rl.get_screen_height() / 4) as u32;
         let renderer = Renderer::new(&mut rl, &thread, width, height)?;
+        let rl = RefCell::new(rl);
 
         Ok(Self {
             delta: Default::default(),
-            rl: RefCell::new(rl),
+            rl,
             thread,
+            assets: assets::Assets::new("assets"),
             renderer: RefCell::new(renderer),
             current_scene: RefCell::new(None),
             scenes: RefCell::new(HashMap::new()),

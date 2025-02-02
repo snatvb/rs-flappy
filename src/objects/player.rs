@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use raylib::prelude::*;
 
 use crate::engine::{
@@ -10,7 +12,7 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new(texture: Texture2D) -> Self {
+    pub fn new(texture: Rc<Texture2D>) -> Self {
         Self {
             sprite: AnimatedSprite::new(Sprite::new(texture, 16.0, 16.0), 4, 0.2),
         }
