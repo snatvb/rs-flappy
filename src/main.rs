@@ -6,6 +6,7 @@ use std::env;
 use engine::Engine;
 use raylib::prelude::*;
 mod engine;
+mod objects;
 mod scenes;
 
 fn main() {
