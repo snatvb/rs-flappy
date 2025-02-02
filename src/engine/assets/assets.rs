@@ -34,7 +34,8 @@ impl Assets {
         drop(cache);
 
         let mut cache = self.cache.textures.write().unwrap();
-        let texture = Rc::new(rl.load_texture(thread, filepath)?);
+        let path = format!("{}/{}", self.root, filepath);
+        let texture = Rc::new(rl.load_texture(thread, &path)?);
         cache.insert(filepath.to_owned(), texture.clone());
 
         Ok(texture)

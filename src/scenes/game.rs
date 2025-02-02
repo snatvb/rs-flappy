@@ -25,11 +25,7 @@ impl Scene for Game {
     fn load(&mut self, _engine: &Engine) {
         let texture = _engine
             .assets
-            .load_texture(
-                &mut _engine.rl.borrow_mut(),
-                &_engine.thread,
-                "assets/birds.png",
-            )
+            .load_texture(&mut _engine.rl.borrow_mut(), &_engine.thread, "birds.png")
             .expect("Birds png must be defined");
 
         self.player = Some(Player::new(texture));
