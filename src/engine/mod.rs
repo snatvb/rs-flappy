@@ -9,17 +9,15 @@ use std::{
 use derive_more::{Deref, DerefMut};
 use raylib::prelude::*;
 
-use crate::scenes;
-
-use self::{
-    renderer::{Renderer, RendererHandler},
-    scene::Scene,
-};
-
+pub use self::renderer::{Renderer, RendererHandler};
 pub mod assets;
 pub mod core;
 pub mod renderer;
 pub mod scene;
+
+pub use assets::*;
+pub use core::*;
+pub use scene::Scene;
 
 pub struct Engine {
     pub rl: RefCell<RaylibHandle>,

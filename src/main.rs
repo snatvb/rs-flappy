@@ -7,14 +7,12 @@ use engine::Engine;
 use raylib::prelude::*;
 mod engine;
 mod objects;
+mod prelude;
 mod scenes;
 
 fn main() {
     unsafe {
-        env::set_var(
-            "RUST_LOG",
-            env::var("RUST_LOG").unwrap_or("info".to_owned()),
-        );
+        env::set_var("LOG", env::var("LOG").unwrap_or("info".to_owned()));
     }
     env_logger::init();
     log::info!("Getting start");

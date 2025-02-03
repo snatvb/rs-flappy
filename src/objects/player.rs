@@ -22,6 +22,12 @@ impl Player {
         self.sprite.update(engine.delta.get());
     }
 
+    #[inline]
+    pub fn set_position(&mut self, x: f32, y: f32) {
+        self.sprite.set_position(x, y);
+    }
+
+    #[inline]
     pub fn draw(&self, d: &mut RaylibTextureMode<RaylibDrawHandle>) {
         self.sprite.draw(d);
     }

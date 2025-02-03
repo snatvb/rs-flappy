@@ -6,6 +6,8 @@ use std::{
 use super::cache::AssetsCache;
 use raylib::prelude::*;
 
+pub type Asset2D = Rc<Texture2D>;
+
 pub struct Assets {
     root: String,
     cache: AssetsCache,
@@ -24,7 +26,7 @@ impl Assets {
         rl: &mut RaylibHandle,
         thread: &RaylibThread,
         filepath: &str,
-    ) -> Result<Rc<Texture2D>, String> {
+    ) -> Result<Asset2D, String> {
         let cache = self.cache.textures.read().unwrap();
         if let Some(texture) = cache.get(filepath) {
             log::debug!("Cache hit: Texture2D {filepath}");

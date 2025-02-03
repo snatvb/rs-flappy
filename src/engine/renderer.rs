@@ -48,6 +48,12 @@ impl Renderer {
         d.clear_background(Color::BLANK);
     }
 
+    #[inline]
+    pub fn size(&self) -> (u32, u32) {
+        (self.width, self.height)
+    }
+
+    #[inline]
     pub fn draw(&self, d: &mut RaylibDrawHandle) {
         d.draw_texture_pro(
             &*self.texture.borrow_mut(),
@@ -79,10 +85,12 @@ impl<'a, 'b, 'd> RendererHandler<'a, 'b, 'd> {
         }
     }
 
+    #[inline]
     pub fn width(&self) -> u32 {
         return self.renderer.borrow().width;
     }
 
+    #[inline]
     pub fn height(&self) -> u32 {
         return self.renderer.borrow().height;
     }
