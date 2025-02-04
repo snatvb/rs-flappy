@@ -4,7 +4,7 @@ use std::usize;
 use rand::prelude::IndexedRandom;
 
 use crate::engine::Engine;
-use crate::objects::{tube, Player, Tube};
+use crate::objects::{tube, Ground, Player, Tube};
 use crate::prelude::*;
 
 struct Tubes {
@@ -85,6 +85,7 @@ impl Tubes {
 struct State {
     player: Player,
     tubes: Tubes,
+    ground: Ground,
 }
 
 pub struct Game {
@@ -102,24 +103,29 @@ impl Scene for Game {
         "game"
     }
 
-    fn load(&mut self, _engine: &Engine) {
-        let rl = &mut _engine.rl.borrow_mut();
-        let texture = _engine
+    fn load(&mut self, engine: &Engine) {
+        let rl = &mut engine.rl.borrow_mut();
+        let texture = engine
             .assets
-            .load_texture(rl, &_engine.thread, "birds.png")
+            .load_texture(rl, &engine.thread, "birds.png")
             .expect("Birds png must be defined");
 
         let mut player = Player::new(texture);
         player.set_position(10.0, 10.0);
-        // player.sprite.sprite
 
-        let texture = _engine
+        let texture = engine
             .assets
-            .load_texture(rl, &_engine.thread, "pipe_n_ground.png")
+            .load_texture(rl, &engine.thread, "pipe_n_ground.png")
             .expect("Pipe and ground png must be defined");
 
-        let tubes = Tubes::new(texture);
-        self.state = Some(State { player, tubes });
+        let tubes = Tubes::new(texture.clone());
+        let mut ground = Ground::new(texture);
+        ground.generate(engine);
+        self.state = Some(State {
+            player,
+            tubes,
+            ground,
+        });
     }
 
     fn update(&mut self, _engine: &Engine) {
@@ -149,6 +155,7 @@ impl Scene for Game {
             d.draw_text(TEXT, x, y, FZ, Color::WHITE);
             state.tubes.draw(d);
             state.player.draw(d);
+            state.ground.draw(d);
         });
     }
 }
