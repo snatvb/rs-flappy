@@ -1,4 +1,5 @@
 use std::borrow::BorrowMut;
+use std::usize;
 
 use rand::prelude::IndexedRandom;
 
@@ -59,9 +60,19 @@ impl Tubes {
     }
 
     pub fn update(&mut self, engine: &Engine) {
-        for tube in &mut self.active {
+        let mut to_remove: Vec<usize> = vec![];
+        for (i, tube) in &mut self.active.iter_mut().enumerate() {
             tube.shift(-2.0, 0.0);
+            if tube.x() < -32.0 {
+                to_remove.push(i);
+            }
         }
+        for i in to_remove.iter().copied().rev() {
+            let tube = self.active.remove(i);
+            self.pool.push(tube);
+        }
+
+        // log::debug!("Active {}, Pool: {}", self.active.len(), self.pool.len());
     }
 
     pub fn draw(&self, d: &mut RaylibTextureMode<RaylibDrawHandle>) {
@@ -118,7 +129,7 @@ impl Scene for Game {
             .expect("State must be loaded before update");
 
         if _engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_S) {
-            state.tubes.spawn(_engine, tube::Pos::Top, 0);
+            state.tubes.spawn(_engine, tube::Pos::Bottom, 0);
         }
 
         state.tubes.update(_engine);

@@ -65,6 +65,16 @@ impl Sprite {
     }
 
     #[inline]
+    pub fn x(&self) -> f32 {
+        self.dest.x
+    }
+
+    #[inline]
+    pub fn y(&self) -> f32 {
+        self.dest.y
+    }
+
+    #[inline]
     pub fn width(&self) -> f32 {
         self.dest.width
     }
