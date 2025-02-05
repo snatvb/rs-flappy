@@ -1,10 +1,5 @@
 use crate::prelude::*;
 
-pub struct Ground {
-    tiles: Vec<Sprite>,
-    texture: Asset2D,
-}
-
 const TILE_W: f32 = 32 as f32;
 const TILE_H: f32 = 16 as f32;
 const TEXTURE_Y_G: f32 = 64.0;
@@ -12,12 +7,20 @@ const TEXTURE_Y: f32 = TEXTURE_Y_G - TILE_H;
 const TEXTURE_X: [f32; 2] = [0.0, TILE_W];
 const LAYERS: i32 = 2;
 
-// TODO: Add more layers
+pub struct Ground {
+    tiles: Vec<Sprite>,
+    texture: Asset2D,
+    per_row: u32,
+    speed: f32,
+}
+
 impl Ground {
-    pub fn new(texture: Asset2D) -> Self {
+    pub fn new(texture: Asset2D, speed: f32) -> Self {
         Self {
-            tiles: Default::default(),
+            speed,
             texture,
+            tiles: Default::default(),
+            per_row: Default::default(),
         }
     }
 
@@ -26,7 +29,8 @@ impl Ground {
 
         let mut rng = rand::rng();
         let renderer = engine.renderer.borrow();
-        let amount = renderer.width / TILE_W as u32 + TILE_W as u32;
+        let amount = renderer.width / TILE_W as u32 + TILE_W as u32 + 2;
+        self.per_row = amount;
 
         for i in 0..amount {
             for l in 0..LAYERS {
@@ -42,6 +46,21 @@ impl Ground {
                 sprite.set_offset(*TEXTURE_X.choose(&mut rng).unwrap(), texture_y);
                 self.tiles.push(sprite);
             }
+        }
+    }
+
+    pub fn update(&mut self, engine: &Engine) {
+        for tile in &mut self.tiles {
+            if tile.x() > -tile.width() {
+                tile.set_position(tile.x() - self.speed * engine.delta.get(), tile.y());
+                continue;
+            }
+
+            let x_tail = tile.x() + tile.width();
+            _ = tile.set_position(
+                self.per_row as f32 * tile.width() - tile.width() + x_tail,
+                tile.y(),
+            )
         }
     }
 

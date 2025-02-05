@@ -119,7 +119,7 @@ impl Scene for Game {
             .expect("Pipe and ground png must be defined");
 
         let tubes = Tubes::new(texture.clone());
-        let mut ground = Ground::new(texture);
+        let mut ground = Ground::new(texture, 60.0);
         ground.generate(engine);
         self.state = Some(State {
             player,
@@ -128,18 +128,19 @@ impl Scene for Game {
         });
     }
 
-    fn update(&mut self, _engine: &Engine) {
+    fn update(&mut self, engine: &Engine) {
         let state = self
             .state
             .as_mut()
             .expect("State must be loaded before update");
 
-        if _engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_S) {
-            state.tubes.spawn(_engine, tube::Pos::Bottom, 0);
+        if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_S) {
+            state.tubes.spawn(engine, tube::Pos::Bottom, 0);
         }
 
-        state.tubes.update(_engine);
-        state.player.update(_engine);
+        state.tubes.update(engine);
+        state.player.update(engine);
+        state.ground.update(engine);
     }
 
     fn draw(&mut self, _engine: &Engine, renderer: &mut RendererHandler) {
