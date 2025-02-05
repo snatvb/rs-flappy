@@ -86,15 +86,20 @@ struct State {
     player: Player,
     tubes: Tubes,
     ground: Ground,
+    tube_spawn_timer: Timer,
 }
 
 pub struct Game {
     state: Option<State>,
+    rng: rand::rngs::ThreadRng,
 }
 
 impl Game {
     pub fn new() -> Self {
-        Self { state: None }
+        Self {
+            state: None,
+            rng: rand::rng(),
+        }
     }
 }
 
@@ -125,6 +130,10 @@ impl Scene for Game {
             player,
             tubes,
             ground,
+            tube_spawn_timer: Timer {
+                current: 0.8,
+                max: 1.0,
+            },
         });
     }
 
@@ -135,6 +144,13 @@ impl Scene for Game {
             .expect("State must be loaded before update");
 
         if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_S) {
+            state.tubes.spawn(engine, tube::Pos::Bottom, 0);
+        }
+
+        if state.tube_spawn_timer.tick(engine.delta.get()) {
+            let delay = self.rng.random_range(1.2..1.7);
+            state.tube_spawn_timer.max = delay;
+            state.tubes.spawn(engine, tube::Pos::Top, 0);
             state.tubes.spawn(engine, tube::Pos::Bottom, 0);
         }
 
