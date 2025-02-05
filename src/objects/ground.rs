@@ -10,6 +10,7 @@ const TILE_H: f32 = 16 as f32;
 const TEXTURE_Y_G: f32 = 64.0;
 const TEXTURE_Y: f32 = TEXTURE_Y_G - TILE_H;
 const TEXTURE_X: [f32; 2] = [0.0, TILE_W];
+const LAYERS: i32 = 2;
 
 // TODO: Add more layers
 impl Ground {
@@ -28,12 +29,19 @@ impl Ground {
         let amount = renderer.width / TILE_W as u32 + TILE_W as u32;
 
         for i in 0..amount {
-            let x = i as f32 * TILE_W - TILE_W;
-            let y = renderer.height as f32 - TILE_H;
-            let mut sprite = Sprite::new(self.texture.clone(), TILE_W, TILE_H);
-            sprite.set_position(x, y);
-            sprite.set_offset(*TEXTURE_X.choose(&mut rng).unwrap(), 48.0);
-            self.tiles.push(sprite);
+            for l in 0..LAYERS {
+                let x = i as f32 * TILE_W - TILE_W;
+                let y = renderer.height as f32 - TILE_H * (l + 1) as f32;
+                let mut sprite = Sprite::new(self.texture.clone(), TILE_W, TILE_H);
+                sprite.set_position(x, y);
+                let texture_y = if l == LAYERS - 1 {
+                    TEXTURE_Y
+                } else {
+                    TEXTURE_Y_G
+                };
+                sprite.set_offset(*TEXTURE_X.choose(&mut rng).unwrap(), texture_y);
+                self.tiles.push(sprite);
+            }
         }
     }
 
