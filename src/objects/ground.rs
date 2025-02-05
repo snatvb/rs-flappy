@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
-const TILE_W: f32 = 32 as f32;
-const TILE_H: f32 = 16 as f32;
+const TILE_W: f32 = 32.0;
+const TILE_H: f32 = 16.0;
 const TEXTURE_Y_G: f32 = 64.0;
 const TEXTURE_Y: f32 = TEXTURE_Y_G - TILE_H;
 const TEXTURE_X: [f32; 2] = [0.0, TILE_W];
