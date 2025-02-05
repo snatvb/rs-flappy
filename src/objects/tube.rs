@@ -22,6 +22,9 @@ impl Tube {
             pub fn y(&self) -> f32;
             pub fn width(&self) -> f32;
             pub fn height(&self) -> f32;
+            pub fn flip_x(&mut self);
+            pub fn flip_y(&mut self);
+            pub fn flip(&mut self, to: sprite::Direction);
         }
     }
 

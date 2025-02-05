@@ -9,6 +9,13 @@ pub struct Sprite {
     origin: Vector2,
 }
 
+pub enum Direction {
+    Left,
+    Right,
+    Up,
+    UpSide,
+}
+
 impl Sprite {
     pub fn new(texture: Asset2D, w: f32, h: f32) -> Self {
         Self {
@@ -80,6 +87,27 @@ impl Sprite {
     #[inline]
     pub fn height(&self) -> f32 {
         self.dest.height
+    }
+
+    #[inline]
+    pub fn flip_x(&mut self) {
+        self.source.width *= -1.0;
+    }
+
+    #[inline]
+    pub fn flip_y(&mut self) {
+        self.source.height *= -1.0;
+    }
+
+    #[inline]
+    pub fn flip(&mut self, to: Direction) {
+        match (self.width(), self.height(), to) {
+            (w, _, Direction::Right) if w < 0.0 => self.flip_x(),
+            (w, _, Direction::Left) if w > 0.0 => self.flip_x(),
+            (_, h, Direction::UpSide) if h > 0.0 => self.flip_y(),
+            (_, h, Direction::Up) if h < 0.0 => self.flip_y(),
+            _ => {}
+        }
     }
 
     #[inline]

@@ -26,6 +26,9 @@ impl AnimatedSprite {
 
     delegate! {
         to self.base {
+            pub fn flip_x(&mut self);
+            pub fn flip_y(&mut self);
+            pub fn flip(&mut self, to: sprite::Direction);
             pub fn set_position(&mut self, x: f32, y: f32);
             pub fn x(&self) -> f32;
             pub fn y(&self) -> f32;

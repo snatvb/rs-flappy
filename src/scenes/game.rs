@@ -25,7 +25,6 @@ impl Tubes {
     }
 
     // TODO: Change variant
-    // TODO: Add flip Sprite
     pub fn spawn(&mut self, enigne: &Engine, pos: tube::Pos, offset: u32) {
         let variant = 0;
 
@@ -48,6 +47,10 @@ impl Tubes {
             }
         });
 
+        tube.flip(match pos {
+            tube::Pos::Bottom => sprite::Direction::Up,
+            tube::Pos::Top => sprite::Direction::UpSide,
+        });
         tube.variant = variant;
         tube.pos = pos;
         tube.set_position(x as f32, y as f32);
