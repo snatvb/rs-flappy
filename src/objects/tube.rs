@@ -15,26 +15,19 @@ pub struct Tube {
 }
 
 impl Tube {
-    #[inline]
-    pub fn set_position(&mut self, x: f32, y: f32) {
-        self.sprite.set_position(x, y);
-    }
-
-    #[inline]
-    pub fn x(&self) -> f32 {
-        self.sprite.x()
-    }
-
-    #[inline]
-    pub fn y(&self) -> f32 {
-        self.sprite.y()
+    delegate! {
+        to self.sprite {
+            pub fn set_position(&mut self, x: f32, y: f32);
+            pub fn x(&self) -> f32;
+            pub fn y(&self) -> f32;
+            pub fn width(&self) -> f32;
+            pub fn height(&self) -> f32;
+        }
     }
 
     #[inline]
     pub fn shift(&mut self, x: f32, y: f32) {
-        let position = self.sprite.get_position();
-        self.set_position(position.x + x, position.y + y);
-        // log::debug!("Move: {position:?} -> +{x}, +{y}");
+        self.set_position(self.x() + x, self.y() + y);
     }
 
     #[inline]

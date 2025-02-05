@@ -43,17 +43,15 @@ impl Sprite {
     }
 
     #[inline]
-    pub fn resize(&mut self, w: f32, h: f32) -> &mut Self {
+    pub fn resize(&mut self, w: f32, h: f32) {
         self.dest.width = w;
         self.dest.height = h;
-        self
     }
 
     #[inline]
-    pub fn set_position(&mut self, x: f32, y: f32) -> &mut Self {
+    pub fn set_position(&mut self, x: f32, y: f32) {
         self.dest.x = x;
         self.dest.y = y;
-        self
     }
 
     #[inline]

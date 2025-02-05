@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use raylib::prelude::*;
+use crate::prelude::*;
 
 use crate::engine::{
     core::{animtaed_sprite::AnimatedSprite, sprite::Sprite},
@@ -18,13 +18,18 @@ impl Player {
         }
     }
 
-    pub fn update(&mut self, engine: &Engine) {
-        self.sprite.update(engine.delta.get());
+    delegate! {
+        to self.sprite {
+            pub fn set_position(&mut self, x: f32, y: f32);
+            pub fn x(&self) -> f32;
+            pub fn y(&self) -> f32;
+            pub fn width(&self) -> f32;
+            pub fn height(&self) -> f32;
+        }
     }
 
-    #[inline]
-    pub fn set_position(&mut self, x: f32, y: f32) {
-        self.sprite.set_position(x, y);
+    pub fn update(&mut self, engine: &Engine) {
+        self.sprite.update(engine.delta.get());
     }
 
     #[inline]

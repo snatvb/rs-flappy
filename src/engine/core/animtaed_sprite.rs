@@ -24,6 +24,16 @@ impl AnimatedSprite {
         }
     }
 
+    delegate! {
+        to self.base {
+            pub fn set_position(&mut self, x: f32, y: f32);
+            pub fn x(&self) -> f32;
+            pub fn y(&self) -> f32;
+            pub fn width(&self) -> f32;
+            pub fn height(&self) -> f32;
+        }
+    }
+
     #[inline]
     pub fn set_speed(&mut self, speed: f32) -> &mut Self {
         self.timer.max = speed;
@@ -35,11 +45,11 @@ impl AnimatedSprite {
         self.timer.max
     }
 
-    #[inline]
-    pub fn set_position(&mut self, x: f32, y: f32) -> &mut Self {
-        self.base.set_position(x, y);
-        self
-    }
+    // #[inline]
+    // pub fn set_position(&mut self, x: f32, y: f32) {
+    //     self.base.set_position(x, y);
+    //     self
+    // }
 
     pub fn update(&mut self, delta: f32) {
         if !self.timer.tick(delta) {
