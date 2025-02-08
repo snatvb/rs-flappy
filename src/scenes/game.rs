@@ -67,7 +67,7 @@ impl Tubes {
         // });
         tube.variant = variant;
         tube.pos = pos;
-        tube.set_position(x as f32, y as f32);
+        tube.set_position(x as f32, y);
 
         self.active.push(tube);
         {
@@ -104,6 +104,7 @@ struct State {
     tubes: Tubes,
     ground: Ground,
     tube_spawn_timer: Timer,
+    background: Sprite,
 }
 
 pub struct Game {
@@ -127,6 +128,7 @@ impl Scene for Game {
 
     fn load(&mut self, engine: &Engine) {
         let rl = &mut engine.rl.borrow_mut();
+        // let renderer = engine.renderer.borrow();
         let texture = engine
             .assets
             .load_texture(rl, &engine.thread, "birds.png")
@@ -143,10 +145,20 @@ impl Scene for Game {
         let tubes = Tubes::new(texture.clone());
         let mut ground = Ground::new(texture, 60.0);
         ground.generate(engine);
+
+        let texture = engine
+            .assets
+            .load_texture(rl, &engine.thread, "background/background1.png")
+            .expect("Pipe and ground png must be defined");
+
+        let (w, h) = (texture.width() as f32, texture.height() as f32);
+        let background = Sprite::new(texture, w, h);
+
         self.state = Some(State {
             player,
             tubes,
             ground,
+            background,
             tube_spawn_timer: Timer {
                 current: 0.8,
                 max: 1.0,
@@ -184,6 +196,8 @@ impl Scene for Game {
                 .state
                 .as_ref()
                 .expect("State must be loaded before draw");
+            state.background.draw(d);
+
             const TEXT: &str = "Press [Space] to jump";
             let x = r.width as i32 / 2 - d.measure_text(TEXT, FZ) / 2;
             let y = r.height as i32 / 2 - FZ / 2;
