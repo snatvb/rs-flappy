@@ -165,7 +165,7 @@ impl Scene for Game {
             state.tubes.spawn_double(engine, variant, offset);
         }
 
-        state.tubes.update();
+        state.tubes.update(engine);
         state.player.update(engine);
         state.ground.update(engine);
         state.player.sync_collider();

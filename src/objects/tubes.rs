@@ -77,10 +77,11 @@ impl Tubes {
         }
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self, engine: &Engine) {
         let mut to_remove: Vec<usize> = vec![];
+        let diff_x = engine.delta.get() * 60.0 * -1.0;
         for (i, tube) in &mut self.active.iter_mut().enumerate() {
-            tube.shift(-2.0, 0.0);
+            tube.shift(diff_x, 0.0);
             if tube.x() < -32.0 {
                 to_remove.push(i);
             }

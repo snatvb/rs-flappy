@@ -19,7 +19,7 @@ fn main() {
     let (rl, thread) = raylib::init().size(800, 600).title("Hello, World").build();
     let mut engine = Engine::new(rl, thread).unwrap();
     engine
-        .lock_fps(30)
+        .lock_fps(120)
         .register_scene(Box::new(scenes::Welcome::new()))
         .register_scene(Box::new(scenes::Game::new()))
         .switch_scene("welcome");

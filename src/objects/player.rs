@@ -52,7 +52,7 @@ impl Player {
         let dt = engine.delta.get();
         self.velocity = lerp(self.velocity, MAX_VELOCITY, 0.8_f32.min(dt * 0.4));
         self.sprite.update(dt);
-        self.set_position(self.x(), self.y() + self.velocity);
+        self.set_position(self.x(), self.y() + self.velocity * 44.0 * dt);
     }
 
     #[inline]
