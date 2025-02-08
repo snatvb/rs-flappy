@@ -160,8 +160,9 @@ impl Scene for Game {
             let delay = self.rng.random_range(1.2..1.7);
             state.tube_spawn_timer.max = delay;
             let offset = tubes::rand_tube_offset();
-            state.tubes.spawn(engine, tube::Pos::Top, offset);
-            state.tubes.spawn(engine, tube::Pos::Bottom, offset);
+            let mut rng = rand::rng();
+            let variant = rng.random_range(0..3);
+            state.tubes.spawn_double(engine, variant, offset);
         }
 
         state.tubes.update();

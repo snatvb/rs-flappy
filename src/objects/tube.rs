@@ -10,7 +10,6 @@ pub enum Pos {
 
 pub struct Tube {
     pub sprite: Sprite,
-    pub variant: u8,
     pub pos: Pos,
     pub visited: bool,
 }
@@ -27,6 +26,13 @@ impl Tube {
             pub fn flip_y(&mut self);
             pub fn flip(&mut self, to: sprite::Direction);
         }
+    }
+
+    pub fn set_variant(&mut self, variant: u8) {
+        self.sprite.set_offset(
+            variant as f32 * self.sprite.width(),
+            self.sprite.get_offset_y(),
+        );
     }
 
     #[inline]

@@ -27,12 +27,14 @@ impl Tubes {
             active: Default::default(),
         }
     }
+    #[inline(always)]
+    pub fn spawn_double(&mut self, engine: &Engine, variant: u8, offset: f32) {
+        self.spawn(engine, variant, tube::Pos::Top, offset);
+        self.spawn(engine, variant, tube::Pos::Bottom, offset);
+    }
 
-    // TODO: Change variant
-    pub fn spawn(&mut self, enigne: &Engine, pos: tube::Pos, offset: f32) {
-        let variant = 0;
-
-        let (width, height) = enigne.renderer.borrow().size();
+    pub fn spawn(&mut self, engine: &Engine, variant: u8, pos: tube::Pos, offset: f32) {
+        let (width, height) = engine.renderer.borrow().size();
         let y = match pos {
             tube::Pos::Bottom => (height - TUBE_H * LAYERS) as f32 + TUBE_H as f32 * 1.25 - offset,
             tube::Pos::Top => {
@@ -54,7 +56,7 @@ impl Tubes {
             Tube {
                 sprite: Sprite::new(self.texture.clone(), TUBE_W as f32, TUBE_H as f32),
                 visited: false,
-                variant,
+
                 pos,
             }
         });
@@ -63,10 +65,10 @@ impl Tubes {
         //     tube::Pos::Bottom => sprite::Direction::Up,
         //     tube::Pos::Top => sprite::Direction::UpSide,
         // });
-        tube.variant = variant;
         tube.pos = pos;
         tube.set_position(x as f32, y);
         tube.visited = false;
+        tube.set_variant(variant);
 
         self.active.push(tube);
         {
