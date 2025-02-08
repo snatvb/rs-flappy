@@ -1,5 +1,4 @@
 use std::borrow::BorrowMut;
-use std::usize;
 
 use rand::prelude::IndexedRandom;
 
@@ -14,6 +13,8 @@ struct Tubes {
 }
 
 const LAYERS: u32 = 4;
+const TUBE_W: u32 = 32;
+const TUBE_H: u32 = 48;
 
 impl Tubes {
     pub fn new(texture: Asset2D) -> Self {
@@ -30,18 +31,18 @@ impl Tubes {
 
         let (width, height) = enigne.renderer.borrow().size();
         let y = if pos == tube::Pos::Bottom {
-            (height - 32 * (LAYERS - 1) + 24) - offset
+            (height - TUBE_W * (LAYERS - 1) + 24) - offset
         } else {
             16 - offset
         };
 
-        let x = width + 32;
+        let x = width + TUBE_W;
 
         let mut tube = self.pool.pop().unwrap_or_else(|| {
             log::debug!("Create new tube {pos} {variant}");
 
             Tube {
-                sprite: Sprite::new(self.texture.clone(), 32.0, 48.0),
+                sprite: Sprite::new(self.texture.clone(), TUBE_W as f32, TUBE_H as f32),
                 variant,
                 pos,
             }
