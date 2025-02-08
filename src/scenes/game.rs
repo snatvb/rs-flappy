@@ -37,7 +37,6 @@ impl Tubes {
         let variant = 0;
 
         let (width, height) = enigne.renderer.borrow().size();
-        log::debug!("{height}");
         let y = match pos {
             tube::Pos::Bottom => (height - TUBE_H * LAYERS) as f32 + TUBE_H as f32 * 1.25 - offset,
             tube::Pos::Top => {
