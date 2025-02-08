@@ -139,7 +139,7 @@ impl<'a> SceneGuard<'a> {
     }
 }
 
-impl<'a> std::ops::Deref for SceneGuard<'a> {
+impl std::ops::Deref for SceneGuard<'_> {
     type Target = Box<dyn Scene>;
 
     fn deref(&self) -> &Self::Target {
@@ -147,13 +147,13 @@ impl<'a> std::ops::Deref for SceneGuard<'a> {
     }
 }
 
-impl<'a> std::ops::DerefMut for SceneGuard<'a> {
+impl std::ops::DerefMut for SceneGuard<'_> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.scene.as_mut().expect("Scene in guard must be defined")
     }
 }
 
-impl<'a> Drop for SceneGuard<'a> {
+impl Drop for SceneGuard<'_> {
     fn drop(&mut self) {
         self.engine.scenes.borrow_mut().insert(
             self.scene.as_ref().unwrap().name().to_owned(),
