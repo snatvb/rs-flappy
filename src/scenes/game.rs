@@ -13,7 +13,7 @@ struct Tubes {
     texture: Asset2D,
 }
 
-const LAYERS: u32 = 4;
+const LAYERS: u32 = ground::LAYERS as u32;
 const TUBE_W: u32 = 32;
 const TUBE_H: u32 = 48;
 
@@ -37,8 +37,9 @@ impl Tubes {
         let variant = 0;
 
         let (width, height) = enigne.renderer.borrow().size();
+        log::debug!("{height}");
         let y = match pos {
-            tube::Pos::Bottom => (height - TUBE_W * (LAYERS - 1) + 24) as f32 - offset,
+            tube::Pos::Bottom => (height - TUBE_H * LAYERS) as f32 + TUBE_H as f32 * 1.25 - offset,
             tube::Pos::Top => {
                 TUBE_OFFSETS
                     .iter()
