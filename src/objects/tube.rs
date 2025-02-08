@@ -12,6 +12,7 @@ pub struct Tube {
     pub sprite: Sprite,
     pub variant: u8,
     pub pos: Pos,
+    pub visited: bool,
 }
 
 impl Tube {

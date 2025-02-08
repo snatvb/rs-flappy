@@ -1,11 +1,61 @@
 use std::borrow::BorrowMut;
 
+use num::Integer;
 use rand::prelude::IndexedRandom;
 
 use crate::engine::physics::hit_test_rects;
 use crate::engine::Engine;
 use crate::objects::{ground, tube, tubes, Ground, Player, Tubes};
 use crate::prelude::*;
+
+#[derive(Debug)]
+struct Score {
+    amount: u32,
+    scale: f32,
+    color: Color,
+}
+
+impl Default for Score {
+    fn default() -> Self {
+        Score {
+            scale: 1.0,
+            amount: 0,
+            color: Color::WHITE,
+        }
+    }
+}
+
+impl Score {
+    #[inline]
+    pub fn update(&mut self) {
+        self.scale = lerp(self.scale, 1.0, 0.3);
+        self.color = color_lerp(self.color, Color::WHITE, 0.05);
+    }
+
+    #[inline]
+    pub fn increment(&mut self) {
+        self.amount += 1;
+        self.scale = 2.0;
+        if self.amount.mod_floor(&5_u32) == 0 {
+            self.color = Color {
+                r: 200,
+                g: 10,
+                b: 10,
+                a: 255,
+            };
+            self.scale = 3.5;
+        }
+    }
+
+    #[inline]
+    pub fn draw(&self, d: &mut RaylibTextureMode<RaylibDrawHandle>, r: &Renderer) {
+        let fz = (10.0 * self.scale) as i32;
+        let text = format!("{}", self.amount);
+        let x = r.width as i32 / 2 - d.measure_text(&text, fz) / 2;
+        let y = 24 - fz / 2;
+        d.draw_text(&text, x, y, fz, self.color);
+    }
+}
 
 struct State {
     player: Player,
@@ -14,6 +64,7 @@ struct State {
     tube_spawn_timer: Timer,
     background: Sprite,
     world_bounds: Rectangle,
+    score: Score,
 }
 
 pub struct Game {
@@ -80,6 +131,7 @@ impl Scene for Game {
             player,
             tubes,
             ground,
+            score: Score::default(),
             world_bounds: Rectangle {
                 x: 0.0,
                 y: 0.0,
@@ -112,7 +164,7 @@ impl Scene for Game {
             state.tubes.spawn(engine, tube::Pos::Bottom, offset);
         }
 
-        state.tubes.update(engine);
+        state.tubes.update();
         state.player.update(engine);
         state.ground.update(engine);
         state.player.sync_collider();
@@ -120,6 +172,20 @@ impl Scene for Game {
         if Game::player_hits(state) {
             engine.switch_scene("welcome");
         }
+
+        state
+            .tubes
+            .active
+            .iter_mut()
+            .filter(|t| !t.visited && t.pos == tube::Pos::Bottom)
+            .for_each(|tube| {
+                if tube.x() < state.player.x() {
+                    tube.visited = true;
+                    state.score.increment();
+                }
+            });
+
+        state.score.update();
     }
 
     fn draw(&mut self, _engine: &Engine, renderer: &mut RendererHandler) {
@@ -138,6 +204,7 @@ impl Scene for Game {
             state.tubes.draw(d);
             state.player.draw(d);
             state.ground.draw(d);
+            state.score.draw(d, r);
 
             state.player.draw_gizmoz(d);
             for tube in &state.tubes.active {

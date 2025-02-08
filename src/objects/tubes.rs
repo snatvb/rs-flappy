@@ -53,6 +53,7 @@ impl Tubes {
 
             Tube {
                 sprite: Sprite::new(self.texture.clone(), TUBE_W as f32, TUBE_H as f32),
+                visited: false,
                 variant,
                 pos,
             }
@@ -65,6 +66,7 @@ impl Tubes {
         tube.variant = variant;
         tube.pos = pos;
         tube.set_position(x as f32, y);
+        tube.visited = false;
 
         self.active.push(tube);
         {
@@ -73,7 +75,7 @@ impl Tubes {
         }
     }
 
-    pub fn update(&mut self, engine: &Engine) {
+    pub fn update(&mut self) {
         let mut to_remove: Vec<usize> = vec![];
         for (i, tube) in &mut self.active.iter_mut().enumerate() {
             tube.shift(-2.0, 0.0);

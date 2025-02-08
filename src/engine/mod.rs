@@ -85,7 +85,7 @@ impl Engine {
             scene.unload(self);
         }
 
-        if let Some(mut scene) = SceneGuard::new(&self, name) {
+        if let Some(mut scene) = SceneGuard::new(self, name) {
             log::info!("Loading scene {name}...");
             scene.load(self);
             self.current_scene.replace_with(|_| Some(name.to_owned()));
@@ -100,7 +100,7 @@ impl Engine {
         self.current_scene
             .borrow()
             .as_ref()
-            .and_then(|s| SceneGuard::new(&self, s))
+            .and_then(|s| SceneGuard::new(self, s))
     }
 
     pub fn tick(&self) {

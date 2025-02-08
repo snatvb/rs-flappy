@@ -1,4 +1,5 @@
 use num::{Num, One};
+use raylib::{color::Color, math::lerp};
 use std::{
     ops::{Add, Rem},
     thread::current,
@@ -46,5 +47,15 @@ impl Timer {
         }
 
         false
+    }
+}
+
+pub fn color_lerp(from: Color, to: Color, factor: f32) -> Color {
+    let factor = factor.clamp(0.0, 1.0);
+    Color {
+        r: lerp(from.r as f32, to.r as f32, factor) as u8,
+        g: lerp(from.g as f32, to.g as f32, factor) as u8,
+        b: lerp(from.b as f32, to.b as f32, factor) as u8,
+        a: lerp(from.a as f32, to.a as f32, factor) as u8,
     }
 }
