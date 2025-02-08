@@ -1,4 +1,5 @@
 pub mod animtaed_sprite;
+pub mod physics;
 pub mod sprite;
 pub mod utils;
 

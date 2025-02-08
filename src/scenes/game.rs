@@ -2,8 +2,9 @@ use std::borrow::BorrowMut;
 
 use rand::prelude::IndexedRandom;
 
+use crate::engine::physics::hit_test_rects;
 use crate::engine::Engine;
-use crate::objects::{tube, Ground, Player, Tube};
+use crate::objects::{ground, player, tube, Ground, Player, Tube};
 use crate::prelude::*;
 
 struct Tubes {
@@ -105,6 +106,7 @@ struct State {
     ground: Ground,
     tube_spawn_timer: Timer,
     background: Sprite,
+    world_bounds: Rectangle,
 }
 
 pub struct Game {
@@ -119,6 +121,19 @@ impl Game {
             rng: rand::rng(),
         }
     }
+
+    fn player_hits(state: &mut State) -> bool {
+        if !hit_test_rects(&state.player.collider, &state.world_bounds) {
+            return true;
+        }
+        for tube in &state.tubes.active {
+            if hit_test_rects(tube.sprite.display_rect(), &state.player.collider) {
+                return true;
+            }
+        }
+
+        false
+    }
 }
 
 impl Scene for Game {
@@ -128,6 +143,7 @@ impl Scene for Game {
 
     fn load(&mut self, engine: &Engine) {
         let rl = &mut engine.rl.borrow_mut();
+        let renderer = engine.renderer.borrow();
         let texture = engine
             .assets
             .load_texture(rl, &engine.thread, "birds.png")
@@ -157,6 +173,12 @@ impl Scene for Game {
             player,
             tubes,
             ground,
+            world_bounds: Rectangle {
+                x: 0.0,
+                y: 0.0,
+                width: renderer.width as f32,
+                height: renderer.height as f32 - ground::LAYERS as f32 * ground::TILE_H,
+            },
             background,
             tube_spawn_timer: Timer {
                 current: 0.8,
@@ -170,10 +192,6 @@ impl Scene for Game {
             .state
             .as_mut()
             .expect("State must be loaded before update");
-
-        if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_S) {
-            state.tubes.spawn(engine, tube::Pos::Bottom, 0.0);
-        }
 
         if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_SPACE) {
             state.player.jump();
@@ -190,6 +208,11 @@ impl Scene for Game {
         state.tubes.update(engine);
         state.player.update(engine);
         state.ground.update(engine);
+        state.player.sync_collider();
+
+        if Game::player_hits(state) {
+            engine.switch_scene("welcome");
+        }
     }
 
     fn draw(&mut self, _engine: &Engine, renderer: &mut RendererHandler) {

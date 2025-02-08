@@ -28,6 +28,11 @@ impl Sprite {
     }
 
     #[inline]
+    pub fn display_rect(&self) -> &Rectangle {
+        &self.dest
+    }
+
+    #[inline]
     pub fn set_offset(&mut self, x: f32, y: f32) -> &mut Self {
         self.source.x = x;
         self.source.y = y;
