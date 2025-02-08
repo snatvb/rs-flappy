@@ -128,7 +128,6 @@ impl Scene for Game {
 
     fn load(&mut self, engine: &Engine) {
         let rl = &mut engine.rl.borrow_mut();
-        // let renderer = engine.renderer.borrow();
         let texture = engine
             .assets
             .load_texture(rl, &engine.thread, "birds.png")
@@ -174,6 +173,10 @@ impl Scene for Game {
 
         if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_S) {
             state.tubes.spawn(engine, tube::Pos::Bottom, 0.0);
+        }
+
+        if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_SPACE) {
+            state.player.jump();
         }
 
         if state.tube_spawn_timer.tick(engine.delta.get()) {
