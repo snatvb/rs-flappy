@@ -4,101 +4,8 @@ use rand::prelude::IndexedRandom;
 
 use crate::engine::physics::hit_test_rects;
 use crate::engine::Engine;
-use crate::objects::{ground, player, tube, Ground, Player, Tube};
+use crate::objects::{ground, tube, tubes, Ground, Player, Tubes};
 use crate::prelude::*;
-
-struct Tubes {
-    pool: Vec<Tube>,
-    active: Vec<Tube>,
-    texture: Asset2D,
-}
-
-const LAYERS: u32 = ground::LAYERS as u32;
-const TUBE_W: u32 = 32;
-const TUBE_H: u32 = 48;
-
-const TUBE_OFFSETS: &[f32] = &[8.0, 4.0, 0.0, -4.0, -8.0];
-fn rand_tube_offset() -> f32 {
-    let mut rng = rand::rng();
-    TUBE_OFFSETS.choose(&mut rng).copied().unwrap_or(0.0)
-}
-
-impl Tubes {
-    pub fn new(texture: Asset2D) -> Self {
-        Self {
-            texture,
-            pool: Default::default(),
-            active: Default::default(),
-        }
-    }
-
-    // TODO: Change variant
-    pub fn spawn(&mut self, enigne: &Engine, pos: tube::Pos, offset: f32) {
-        let variant = 0;
-
-        let (width, height) = enigne.renderer.borrow().size();
-        let y = match pos {
-            tube::Pos::Bottom => (height - TUBE_H * LAYERS) as f32 + TUBE_H as f32 * 1.25 - offset,
-            tube::Pos::Top => {
-                TUBE_OFFSETS
-                    .iter()
-                    .copied()
-                    .fold(f32::NEG_INFINITY, |a, b| a.max(b))
-                    * -1.0
-                    - 8.0 // opened part of the tube
-                    - offset
-            }
-        };
-
-        let x = width + TUBE_W;
-
-        let mut tube = self.pool.pop().unwrap_or_else(|| {
-            log::debug!("Create new tube {pos} {variant}");
-
-            Tube {
-                sprite: Sprite::new(self.texture.clone(), TUBE_W as f32, TUBE_H as f32),
-                variant,
-                pos,
-            }
-        });
-
-        // tube.flip(match pos {
-        //     tube::Pos::Bottom => sprite::Direction::Up,
-        //     tube::Pos::Top => sprite::Direction::UpSide,
-        // });
-        tube.variant = variant;
-        tube.pos = pos;
-        tube.set_position(x as f32, y);
-
-        self.active.push(tube);
-        {
-            let amount = self.active.len();
-            log::debug!("Spawned tube, active: {amount}");
-        }
-    }
-
-    pub fn update(&mut self, engine: &Engine) {
-        let mut to_remove: Vec<usize> = vec![];
-        for (i, tube) in &mut self.active.iter_mut().enumerate() {
-            tube.shift(-2.0, 0.0);
-            if tube.x() < -32.0 {
-                to_remove.push(i);
-            }
-        }
-        for i in to_remove.iter().copied().rev() {
-            let tube = self.active.remove(i);
-            self.pool.push(tube);
-        }
-
-        // log::debug!("Active {}, Pool: {}", self.active.len(), self.pool.len());
-    }
-
-    pub fn draw(&self, d: &mut RaylibTextureMode<RaylibDrawHandle>) {
-        for tube in &self.active {
-            tube.draw(d);
-        }
-    }
-}
 
 struct State {
     player: Player,
@@ -200,7 +107,7 @@ impl Scene for Game {
         if state.tube_spawn_timer.tick(engine.delta.get()) {
             let delay = self.rng.random_range(1.2..1.7);
             state.tube_spawn_timer.max = delay;
-            let offset = rand_tube_offset();
+            let offset = tubes::rand_tube_offset();
             state.tubes.spawn(engine, tube::Pos::Top, offset);
             state.tubes.spawn(engine, tube::Pos::Bottom, offset);
         }
