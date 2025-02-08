@@ -16,7 +16,12 @@ impl Scene for Welcome {
     }
 
     fn update(&mut self, engine: &Engine) {
-        if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_SPACE) {
+        if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_SPACE)
+            || engine
+                .rl
+                .borrow()
+                .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT)
+        {
             engine.switch_scene("game");
         }
     }

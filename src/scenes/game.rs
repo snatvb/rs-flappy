@@ -170,7 +170,12 @@ impl Scene for Game {
             self.gizmoz_display = !self.gizmoz_display;
         }
 
-        if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_SPACE) {
+        if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_SPACE)
+            || engine
+                .rl
+                .borrow()
+                .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT)
+        {
             state.player.jump();
         }
 
