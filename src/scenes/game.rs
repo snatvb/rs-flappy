@@ -68,6 +68,7 @@ struct State {
 }
 
 pub struct Game {
+    gizmoz_display: bool,
     state: Option<State>,
     rng: rand::rngs::ThreadRng,
 }
@@ -75,6 +76,7 @@ pub struct Game {
 impl Game {
     pub fn new() -> Self {
         Self {
+            gizmoz_display: false,
             state: None,
             rng: rand::rng(),
         }
@@ -94,6 +96,8 @@ impl Game {
     }
 }
 
+const BG_VARIANTS: [i32; 5] = [1, 2, 3, 4, 5];
+
 impl Scene for Game {
     fn name(&self) -> &str {
         "game"
@@ -102,6 +106,7 @@ impl Scene for Game {
     fn load(&mut self, engine: &Engine) {
         let rl = &mut engine.rl.borrow_mut();
         let renderer = engine.renderer.borrow();
+        let mut rng = rand::rng();
         let texture = engine
             .assets
             .load_texture(rl, &engine.thread, "birds.png")
@@ -121,7 +126,14 @@ impl Scene for Game {
 
         let texture = engine
             .assets
-            .load_texture(rl, &engine.thread, "background/background1.png")
+            .load_texture(
+                rl,
+                &engine.thread,
+                &format!(
+                    "background/background{}.png",
+                    BG_VARIANTS.choose(&mut rng).unwrap_or(&1)
+                ),
+            )
             .expect("Pipe and ground png must be defined");
 
         let (w, h) = (texture.width() as f32, texture.height() as f32);
@@ -151,6 +163,10 @@ impl Scene for Game {
             .state
             .as_mut()
             .expect("State must be loaded before update");
+
+        if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_G) {
+            self.gizmoz_display = !self.gizmoz_display;
+        }
 
         if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_SPACE) {
             state.player.jump();
@@ -207,9 +223,11 @@ impl Scene for Game {
             state.ground.draw(d);
             state.score.draw(d, r);
 
-            state.player.draw_gizmoz(d);
-            for tube in &state.tubes.active {
-                tube.draw_gizmoz(d);
+            if self.gizmoz_display {
+                state.player.draw_gizmoz(d);
+                for tube in &state.tubes.active {
+                    tube.draw_gizmoz(d);
+                }
             }
         });
     }
