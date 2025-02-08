@@ -16,7 +16,10 @@ fn main() {
     }
     env_logger::init();
     log::info!("Getting start");
-    let (rl, thread) = raylib::init().size(800, 600).title("Hello, World").build();
+    let (rl, thread) = raylib::init()
+        .size(800, 600)
+        .title("Flappy Rust | snatvb")
+        .build();
     let mut engine = Engine::new(rl, thread).unwrap();
     engine
         .lock_fps(120)
