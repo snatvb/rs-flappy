@@ -57,7 +57,7 @@ impl Ground {
             }
 
             let x_tail = tile.x() + tile.width();
-            _ = tile.set_position(
+            tile.set_position(
                 self.per_row as f32 * tile.width() - tile.width() + x_tail,
                 tile.y(),
             )
