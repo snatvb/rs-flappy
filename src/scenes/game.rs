@@ -127,7 +127,7 @@ impl Game {
             return true;
         }
         for tube in &state.tubes.active {
-            if hit_test_rects(tube.sprite.display_rect(), &state.player.collider) {
+            if hit_test_rects(&state.player.collider, tube.sprite.display_rect()) {
                 return true;
             }
         }
@@ -231,6 +231,11 @@ impl Scene for Game {
             state.tubes.draw(d);
             state.player.draw(d);
             state.ground.draw(d);
+
+            state.player.draw_gizmoz(d);
+            for tube in &state.tubes.active {
+                tube.draw_gizmoz(d);
+            }
         });
     }
 }
