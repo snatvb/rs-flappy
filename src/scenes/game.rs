@@ -16,6 +16,12 @@ const LAYERS: u32 = 4;
 const TUBE_W: u32 = 32;
 const TUBE_H: u32 = 48;
 
+const TUBE_OFFSETS: &[f32] = &[8.0, 4.0, 0.0, -4.0, -8.0];
+fn rand_tube_offset() -> f32 {
+    let mut rng = rand::rng();
+    TUBE_OFFSETS.choose(&mut rng).copied().unwrap_or(0.0)
+}
+
 impl Tubes {
     pub fn new(texture: Asset2D) -> Self {
         Self {
@@ -26,14 +32,21 @@ impl Tubes {
     }
 
     // TODO: Change variant
-    pub fn spawn(&mut self, enigne: &Engine, pos: tube::Pos, offset: u32) {
+    pub fn spawn(&mut self, enigne: &Engine, pos: tube::Pos, offset: f32) {
         let variant = 0;
 
         let (width, height) = enigne.renderer.borrow().size();
-        let y = if pos == tube::Pos::Bottom {
-            (height - TUBE_W * (LAYERS - 1) + 24) - offset
-        } else {
-            16 - offset
+        let y = match pos {
+            tube::Pos::Bottom => (height - TUBE_W * (LAYERS - 1) + 24) as f32 - offset,
+            tube::Pos::Top => {
+                TUBE_OFFSETS
+                    .iter()
+                    .copied()
+                    .fold(f32::NEG_INFINITY, |a, b| a.max(b))
+                    * -1.0
+                    - 8.0 // opened part of the tube
+                    - offset
+            }
         };
 
         let x = width + TUBE_W;
@@ -48,10 +61,10 @@ impl Tubes {
             }
         });
 
-        tube.flip(match pos {
-            tube::Pos::Bottom => sprite::Direction::Up,
-            tube::Pos::Top => sprite::Direction::UpSide,
-        });
+        // tube.flip(match pos {
+        //     tube::Pos::Bottom => sprite::Direction::Up,
+        //     tube::Pos::Top => sprite::Direction::UpSide,
+        // });
         tube.variant = variant;
         tube.pos = pos;
         tube.set_position(x as f32, y as f32);
@@ -148,14 +161,15 @@ impl Scene for Game {
             .expect("State must be loaded before update");
 
         if engine.rl.borrow().is_key_pressed(KeyboardKey::KEY_S) {
-            state.tubes.spawn(engine, tube::Pos::Bottom, 0);
+            state.tubes.spawn(engine, tube::Pos::Bottom, 0.0);
         }
 
         if state.tube_spawn_timer.tick(engine.delta.get()) {
             let delay = self.rng.random_range(1.2..1.7);
             state.tube_spawn_timer.max = delay;
-            state.tubes.spawn(engine, tube::Pos::Top, 0);
-            state.tubes.spawn(engine, tube::Pos::Bottom, 0);
+            let offset = rand_tube_offset();
+            state.tubes.spawn(engine, tube::Pos::Top, offset);
+            state.tubes.spawn(engine, tube::Pos::Bottom, offset);
         }
 
         state.tubes.update(engine);
