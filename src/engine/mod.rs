@@ -29,22 +29,6 @@ pub struct Engine {
     current_scene: RefCell<Option<String>>,
 }
 
-// pub struct TickContext<'a> {
-//     pub rl: RefMut<'a, RaylibHandle>,
-//     pub thread: &'a RaylibThread,
-//     pub d: RaylibDrawHandle<'a>,
-// }
-//
-// impl<'a> TickContext<'a> {
-//     fn new(
-//         rl: RefMut<'a, RaylibHandle>,
-//         thread: &'a RaylibThread,
-//         d: RaylibDrawHandle<'a>,
-//     ) -> Self {
-//         Self { rl, thread, d }
-//     }
-// }
-
 impl Engine {
     pub fn new(mut rl: RaylibHandle, thread: RaylibThread) -> Result<Engine, String> {
         let width = (rl.get_screen_width() / 4) as u32;
@@ -79,7 +63,12 @@ impl Engine {
         self
     }
 
+    #[inline(always)]
     pub fn switch_scene(&self, name: &str) -> bool {
+        self.send_switch_scene(name, None)
+    }
+
+    pub fn send_switch_scene(&self, name: &str, msg: Option<Box<dyn scene::SceneMessage>>) -> bool {
         if let Some(mut scene) = self.current_scene() {
             log::info!("Unlaading scene {name}...");
             scene.unload(self);
@@ -87,6 +76,9 @@ impl Engine {
 
         if let Some(mut scene) = SceneGuard::new(self, name) {
             log::info!("Loading scene {name}...");
+            if let Some(msg) = msg {
+                scene.preload_message(self, msg);
+            }
             scene.load(self);
             self.current_scene.replace_with(|_| Some(name.to_owned()));
             return true;

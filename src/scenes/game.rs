@@ -8,9 +8,11 @@ use crate::engine::Engine;
 use crate::objects::{ground, tube, tubes, Ground, Player, Tubes};
 use crate::prelude::*;
 
+use super::game_over;
+
 #[derive(Debug)]
 struct Score {
-    amount: u32,
+    pub amount: u32,
     scale: f32,
     color: Color,
 }
@@ -187,7 +189,12 @@ impl Scene for Game {
         state.player.sync_collider();
 
         if Game::player_hits(state) {
-            engine.switch_scene("welcome");
+            engine.send_switch_scene(
+                "game_over",
+                Some(Box::new(game_over::Message {
+                    score: state.score.amount,
+                })),
+            );
         }
 
         state

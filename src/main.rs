@@ -20,6 +20,7 @@ fn main() {
     let mut engine = Engine::new(rl, thread).unwrap();
     engine
         .lock_fps(120)
+        .register_scene(Box::new(scenes::GameOver::new()))
         .register_scene(Box::new(scenes::Welcome::new()))
         .register_scene(Box::new(scenes::Game::new()))
         .switch_scene("welcome");
